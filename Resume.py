@@ -96,3 +96,46 @@ job_df = pd.DataFrame([job])
 
 print("\nJob Description:")
 print(job_df)
+
+
+def match_profiles_to_jobs(profiles, jobs):
+    match_results = {}
+
+    for job_name, job_data in jobs.items():
+        matches = []
+        for profile_name, profile_data in profiles.items():
+            score = 0
+            
+            
+            matching_skills = len(set(profile_data['skills']).intersection(set(job_data['skills'])))
+            score += matching_skills * 10  
+
+            
+            matching_certs = len(set(profile_data['certifications']).intersection(set(job_data['certifications'])))
+            score += matching_certs * 5
+
+            
+            years_exp_required = re.search(r"(\d+)\+ years", job_data['required_experience'])
+            if years_exp_required:
+                required_years = int(years_exp_required.group(1))
+                profile_years = sum(int(exp['to']) - int(exp['from']) for exp in profile_data['experience'])
+                if profile_years >= required_years:
+                    score += 15  
+
+            
+            if job_data['education'] in [edu['degree'] for edu in profile_data['education']]:
+                score += 5
+
+            matches.append((profile_name, score))
+        
+        
+        match_results[job_name] = sorted(matches, key=lambda x: x[1], reverse=True)
+
+    return match_results
+
+
+profiles = {"John Doe": profile}
+jobs = {"Senior Data Scientist": job}
+
+matches = match_profiles_to_jobs(profiles, jobs)
+print(matches)
