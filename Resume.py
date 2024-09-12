@@ -57,3 +57,42 @@ print("\nExperience:")
 print(experience_df)
 print("\nEducation:")
 print(education_df)
+
+
+def parse_job_description(job_text):
+    job_data = {}
+
+    title_match = re.search(r"Title:\s*(.*)", job_text)
+    job_data['title'] = title_match.group(1) if title_match else "Unknown"
+
+    exp_match = re.search(r"Required Experience:\s*(.*)", job_text)
+    job_data['required_experience'] = exp_match.group(1) if exp_match else "Unknown"
+
+    education_match = re.search(r"Preferred Education:\s*(.*)", job_text)
+    job_data['education'] = education_match.group(1) if education_match else "None"
+
+    skills_match = re.search(r"Skills:\s*(.*)", job_text)
+    job_data['skills'] = skills_match.group(1).split(", ") if skills_match else []
+
+    cert_match = re.search(r"Required Certifications:\s*(.*)", job_text)
+    job_data['certifications'] = cert_match.group(1).split(", ") if cert_match else []
+
+    return job_data
+
+job_text = """Title: Senior Data Scientist
+Required Experience:
+- 5+ years in data science or machine learning roles
+- Expertise in Python, SQL, Machine Learning, and Data Analysis
+Preferred Education:
+- M.Sc. or Ph.D. in Data Science or related fields
+Required Certifications:
+- AWS Certified Solutions Architect
+Skills:
+- Python, Machine Learning, SQL, Data Analysis, AWS
+"""
+
+job = parse_job_description(job_text)
+job_df = pd.DataFrame([job])  
+
+print("\nJob Description:")
+print(job_df)
